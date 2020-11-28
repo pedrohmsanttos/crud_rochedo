@@ -1,0 +1,108 @@
+<?php require 'templates/elements/header.phtml'; ?>
+<?php require 'templates/elements/menu.phtml'; ?>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap4.min.css">
+<!-- Begin page content -->
+<div class="container">
+    <div class="mt-3">
+        <h1 style="float:left"><?= $title ?></h1>
+        <a style="float:RIGHT" class="btn btn-outline-success" href="users/add">Adicionar</a>
+    </div>
+</div>
+
+<div class="container">
+    <table class="table dataTable" id="tableUsers">
+        <thead class="thead-inverse">
+        <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Login</th>
+            <th>CPF</th>
+            <th>Email</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($users as $user): ?>
+            <tr>
+                <th scope="row"><?= $user['id_usuario']; ?></th>
+                <td><?= utf8_encode($user['nome']) ?></td>
+                <td><?= $user['login'] ?></td>
+                <td><?= $user['cpf'] ?></td>
+                <td><?= $user['email'] ?></td>
+                <td>
+                    <span class="btn-group" role="group" aria-label="Basic example">
+                        <a href="<?= PATH ?>admin/users/edit/<?= $user['id_usuario']; ?>" class="btn btn-primary">Editar</a>
+                        <a href="<?= PATH ?>admin/users/delete/<?= $user['id_usuario']; ?>" class="btn btn-danger delUser">Excluir</a>
+                    </span>
+                </td>
+            </tr>
+
+        <?php endforeach; ?>
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#tableUsers').DataTable();
+    });
+
+    var temp = $(this);
+    $(".delUser").on('click', function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        var temp = $(this);
+
+        alertify.confirm('CRUD Rochedo', 'Deseja excluir esse perfil?', function (e) {
+            var url = temp.attr('href');
+
+            var load = isLoading({text: 'Aguarde...'});
+            load.loading();
+
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (data) {
+
+                    data = $.parseJSON(data);
+                    console.log(data.message);
+
+                    if (data.type == "success") {
+                        alertify.alert("CRUD Rochedo", data.message, function () {
+                            document.location = "<?= PATH ?>admin/users";
+                        });
+                    } else {
+                        if ($.trim(data.message) != undefined && $.trim(data.message) != "") {
+                            alertify.notify(data.message, 'error', 5, function () {
+                            });
+                        } else {
+                            $.each(data.errors, function (a, b) {
+                                var message = "Erro: " + b;
+                                alertify.notify(message, 'error', 5, function () {
+                                });
+                            });
+                        }
+                    }
+
+                    isLoading().remove();
+
+                },
+
+                error: function (response) {
+                    isLoading().remove();
+                    var message = "Erro: " + response.statusText;
+                    alertify.notify(message, 'error', 5, function () {
+                    });
+                }
+            });
+
+
+        }, function () {
+        });
+    });
+</script>
+
+<?php require 'templates/elements/footer.phtml'; ?>
+

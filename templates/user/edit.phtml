@@ -1,0 +1,148 @@
+<?php require 'templates/elements/header.phtml'; ?>
+<?php require 'templates/elements/menu.phtml'; ?>
+
+<!-- Begin page content -->
+<div class="container">
+
+    <div class="mt-3">
+        <h1><?= $title ?></h1>
+    </div>
+
+    <form method="POST" action="<?= PATH ?>admin/users/edit/" data-toggle="validator" role="form" id="formEdit">
+
+        <input type="hidden" name="id" value="<?= $user->id ?>">
+
+        <div class="form-group">
+            <label for="name">Nome</label>
+            <input type="text" class="form-control" id="name" aria-describedby="nameHelp" name="name"
+                   placeholder="Here's Jhonny!" value="<?= utf8_encode( $user->name ) ?>"
+                   data-validetta="required,minLength[3],maxLength[50]">
+            <small id="nameHelp" class="form-text text-muted">Adiciona teu nome ai, compadre.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="login">Login</label>
+            <input type="text" class="form-control" id="login" aria-describedby="loginHelp" name="login"
+                   placeholder="Um login show" value="<?= $user->login ?>"
+                   data-validetta="required,minLength[5],maxLength[50]">
+            <small id="loginHelp" class="form-text text-muted">Coloca um login rochedo tipo 'meuloginmassa' ou
+                'foratemer' ou 'lukeskywalker'.
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label for="login">CPF</label>
+            <input type="text" class="form-control" id="cpf" aria-describedby="cpfHelp" name="cpf"
+                   placeholder="CPF" value="<?= $user->cpf ?>"
+                   data-validetta="required,minLength[11],maxLength[14]">
+            <small id="cpfHelp" class="form-text text-muted">Agora coloca teu CPF aí :)
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" class="form-control" id="email" aria-describedby="emailHelp" name="email"
+                   placeholder="Coloca teu orkut ai" value="<?= $user->email ?>" data-validetta="required,email">
+            <small id="emailHelp" class="form-text text-muted">Adiciona teu orkut pra eu mandar um depo pra tu.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="level">Perfil &nbsp;</label>
+            <div class="form-check form-check-inline">
+                <?php $i = 1; ?>
+                <?php foreach ($profiles as $profile): ?>
+
+                    <?php $checked = (in_array($profile['id_perfil'], $user->profile)) ? "checked" : ""; ?>
+
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox<?= $i ?>"
+                               name="profile[]"
+                               value="<?= $profile['id_perfil'] ?>" <?= $checked ?>> <?= utf8_encode($profile['descricao']) ?>
+                    </label>
+                    <?php $i++; ?>
+                <?php endforeach; ?>
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="pass">Senha</label>
+            <input type="password" class="form-control" id="pass" aria-describedby="passHelp" name="password"
+                   placeholder="Agora tua senha">
+            <small id="passHelp" class="form-text text-muted">Coloca uma senha massa, tipo 101010 - Se quiser mudar a
+                senha.
+            </small>
+        </div>
+
+        <div class="form-check">
+            <label class="form-check-label">
+                <?php $checked = ($user->blocked == "1") ? "checked" : "" ?>
+
+                <input type="checkbox" class="form-check-input" name="blocked" <?= $checked ?> value="1">
+                Bloqueado
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submit">Atualizar</button>
+    </form>
+</div>
+
+<script>
+    $("#cpf").inputmask({mask: ["999.999.999-99"]});
+
+    $('#formEdit').validetta({
+        showErrorMessages: true,
+        display: 'bubble',
+        bubblePosition: 'bottom',
+        realTime: true,
+        onValid: function (e) {
+
+            e.preventDefault();
+            var load = isLoading({text: 'Aguarde...'});
+            load.loading();
+
+            var url = $("#formEdit").attr('action');
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $("#formEdit").serialize(),
+                success: function (data) {
+
+                    data = $.parseJSON(data);
+                    console.log(data);
+
+                    if (data.type == "success") {
+                        alertify.alert("CRUD Rochedo", data.message, function () {
+                            document.location = "<?= PATH ?>admin/users";
+                        });
+                    } else {
+                        if ($.trim(data.message) != undefined && $.trim(data.message) != "") {
+                            alertify.notify(data.message, 'error', 5, function () {
+                            });
+                        } else {
+                            $.each(data.errors, function (a, b) {
+                                var message = "Erro: " + b;
+                                alertify.notify(message, 'error', 5, function () {
+                                });
+                            });
+                        }
+                    }
+
+                    isLoading().remove();
+
+                },
+
+                error: function (response) {
+                    isLoading().remove();
+                    var message = "Erro: " + response.statusText;
+                    alertify.notify(message, 'error', 5, function () {
+                    });
+                }
+            });
+        }
+    });
+</script>
+
+<?php require 'templates/elements/footer.phtml'; ?>
+

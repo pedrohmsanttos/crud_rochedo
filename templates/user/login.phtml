@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="phmsanttos@gmail.com">
+
+    <title><?= $title ?></title>
+
+    <link href="<?= PATH ?>public/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="<?= PATH ?>public/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link href="<?= PATH ?>public/css/validetta/validetta.min.css" rel="stylesheet">
+    <link href="<?= PATH ?>public/css/isLoading/isLoading.min.css" rel="stylesheet">
+    <link href="<?= PATH ?>public/css/alertify/alertify.min.css" rel="stylesheet">
+    <link href="<?= PATH ?>public/css/alertify/themes/bootstrap.css" rel="stylesheet">
+
+    <script src="<?= PATH ?>public/js/jquery-3.2.1.min.js"></script>
+    <script src="<?= PATH ?>public/js/bootstrap/popper.min.js"></script>
+    <script src="<?= PATH ?>public/js/bootstrap/bootstrap.min.js"></script>
+    <script src="<?= PATH ?>public/js/bootstrap/ie10-viewport-bug-workaround.js"></script>
+    <script src="<?= PATH ?>public/js/validetta/validetta.min.js"></script>
+    <script src="<?= PATH ?>public/js/validetta/validettaLang-pt-BR.js"></script>
+    <script src="<?= PATH ?>public/js/isLoading/isLoading.min.js"></script>
+    <script src="<?= PATH ?>public/js/alertify/alertify.min.js"></script>
+
+
+    <script>
+        alertify.defaults.transition = "slide";
+        alertify.defaults.theme.ok = "btn btn-primary";
+        alertify.defaults.theme.cancel = "btn btn-danger";
+        alertify.defaults.theme.input = "form-control";
+    </script>
+
+    <!-- Custom styles for this template -->
+    <link href="<?= PATH ?>public/css/signin.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container">
+
+    <form class="form-signin" method="post" action="<?= PATH ?>login/" data-toggle="validator" role="form"
+          id="formLogin">
+        <h2 class="form-signin-heading">CRUD Rochedo</h2>
+        <label for="inputLogin" class="sr-only">Login</label>
+        <input type="text" name="login" id="inputLogin" class="form-control" placeholder="Login"
+               data-validetta="required,minLength[5],maxLength[50]" autofocus>
+        <label for="inputPassword" class="sr-only">Senha</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Senha"
+               data-validetta="required,minLength[6],maxLength[50]">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Acessar</button>
+        <br>
+    </form>
+
+    <?php if (isset($error) && !empty($error)): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <strong>Erro: </strong> <?= $error ?>
+        </div>
+    <?php endif; ?>
+
+</div> <!-- /container -->
+
+<script>
+
+    $('#formLogin').validetta({
+        showErrorMessages: true,
+        display: 'bubble',
+        bubblePosition: 'bottom',
+        realTime: true,
+//        onValid: function (e) {
+//            e.preventDefault();
+//            var load = isLoading({text: 'Aguarde...'});
+//            load.loading();
+//
+//            var url = $("#formLogin").attr('action');
+//
+//            $.ajax({
+//                type: "POST",
+//                url: url,
+//                data: $("#formLogin").serialize(),
+//                success: function (data) {
+//
+//                    data = $.parseJSON(data);
+//
+//                    if (data.type == "success") {
+//                        document.location = "<?//= PATH ?>//admin/users";
+//                    } else {
+//                        if ($.trim(data.message) != undefined && $.trim(data.message) != "") {
+//                            alertify.notify(data.message, 'error', 5, function () {
+//                            });
+//                        } else {
+//                            $.each(data.errors, function (a, b) {
+//                                var message = "Erro: " + b;
+//                                alertify.notify(message, 'error', 5, function () {
+//                                });
+//                            });
+//                        }
+//                    }
+//
+//                    isLoading().remove();
+//
+//                },
+//
+//                error: function (response) {
+//                    isLoading().remove();
+//                    var message = "Erro: " + response.statusText;
+//                    alertify.notify(message, 'error', 5, function () {
+//                    });
+//                }
+//            });
+//        }
+    });
+</script>
+
+</body>
+</html>
